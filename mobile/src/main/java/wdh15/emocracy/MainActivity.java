@@ -1,6 +1,7 @@
 package wdh15.emocracy;
 
 import android.app.Activity;
+import android.app.FragmentManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -9,9 +10,15 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import java.util.ArrayList;
 import java.util.GregorianCalendar;
+import java.util.List;
 
 /**
  * Created by madhavajay on 20/06/15.
@@ -29,6 +36,9 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         getActionBar().hide();
         dataManager = new DataManager(this);
+
+        setContentView(R.layout.activity_main);
+        setupView();
     }
 
     @Override
@@ -40,10 +50,10 @@ public class MainActivity extends Activity {
             showLogin();
         } else {
             Log.v(TAG, "Already got user so show main screen");
-            //setupView();
+
             setupRunLoop();
             // Register LocalBroadcastNotifcations
-            LocalBroadcastManager.getInstance(this).registerReceiver(this.messageReceiver, new IntentFilter(NetworkManager.LOGIN_RESPONSE));
+            LocalBroadcastManager.getInstance(this).registerReceiver(this.messageReceiver, new IntentFilter(NetworkManager.CHANNELS_RESPONSE));
         }
     }
 
@@ -69,19 +79,96 @@ public class MainActivity extends Activity {
     }
 
     private void setupView() {
+        Log.v(TAG, "calling setup view");
+        FragmentManager fragmentManager = getFragmentManager();
+        ChannelFragment firstChannel = (ChannelFragment) fragmentManager.findFragmentById(R.id.first_channel);
+        ChannelFragment secondChannel = (ChannelFragment) fragmentManager.findFragmentById(R.id.second_channel);
+        ChannelFragment thirdChannel = (ChannelFragment) fragmentManager.findFragmentById(R.id.third_channel);
+
+        firstChannel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Log.v(TAG, "HELL YES IM CLICKING THE FRAGMENT");
+            }
+        });
+
+        Button buttonAllChannels = (Button) findViewById(R.id.button_all_channels);
+        buttonAllChannels.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Log.v(TAG, "clicked on all channels button");
+            }
+        });
+
+        Button buttonMoodHappy = (Button) findViewById(R.id.button_mood_happy);
+        buttonMoodHappy.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Log.v(TAG, "Clicked on happy mood button");
+            }
+        });
+
+        Button buttonMoodSad = (Button) findViewById(R.id.button_mood_sad);
+        buttonMoodSad.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Log.v(TAG, "Clicked on sad mood button");
+            }
+        });
 
     }
 
     private void updateView() {
+        ArrayList<ChannelModel> channels = dataManager.getChannels();
 
+        Log.v(TAG, "updateview with these channels: " + channels.toString());
+
+        Log.v(TAG, "calling update view");
+        FragmentManager fragmentManager = getFragmentManager();
+        ChannelFragment firstChannel = (ChannelFragment) fragmentManager.findFragmentById(R.id.first_channel);
+        ChannelFragment secondChannel = (ChannelFragment) fragmentManager.findFragmentById(R.id.second_channel);
+        ChannelFragment thirdChannel = (ChannelFragment) fragmentManager.findFragmentById(R.id.third_channel);
+
+        if (channels.size() > 0) {
+            ChannelModel firstChannelModel = channels.remove(0);
+            if (firstChannel != null) {
+                firstChannel.updateView(firstChannelModel);
+            }
+        }
+
+        firstChannel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+            }
+        });
+
+        if (channels.size() > 0) {
+            ChannelModel secondChannelModel = channels.remove(0);
+            if (secondChannelModel != null) {
+                secondChannel.updateView(secondChannelModel);
+            }
+        }
+
+        if (channels.size() > 0) {
+            ChannelModel thirdChannelModel = channels.remove(0);
+            if (thirdChannelModel != null) {
+                thirdChannel.updateView(thirdChannelModel);
+            }
+        }
+
+        TextView labelHappyNumber = (TextView) findViewById(R.id.label_number_happy);
+        labelHappyNumber.setText("" + 1);
+        TextView labelSadNumber = (TextView) findViewById(R.id.label_number_sad);
+        labelSadNumber.setText("" + 0);
     }
 
     private BroadcastReceiver messageReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             if (intent.getAction().equals(NetworkManager.CHANNELS_RESPONSE)) {
-                int loginSuccess = (int)intent.getIntExtra("success", 0);
-                if (loginSuccess == 1) {
+                int newChannelData = (int)intent.getIntExtra("success", 0);
+                if (newChannelData == 1) {
                     Log.v(TAG, "new channel data");
                     updateView();
                 }
