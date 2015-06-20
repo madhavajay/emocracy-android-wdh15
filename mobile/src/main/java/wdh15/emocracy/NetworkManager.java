@@ -142,7 +142,8 @@ public class NetworkManager {
             String responseJson = null;
             try {
                 responseJson = response.body().string();
-                dataManager = new DataManager(this.context);
+                dataManager.setChannels(responseJson);
+
                 //dataManager.setChannelsJson(responseJson);
                 //this.userModel = dataManager.getUser();
             } catch (IOException e) {

@@ -61,7 +61,6 @@ public class MainActivity extends Activity {
                 Log.v(TAG, "entered run loop fetch channel data and notifcations");
 
                 NetworkManager.getInstance().getAllChannels(getApplication());
-
                 handler.postDelayed(this, 5000);
             }
         };
@@ -73,15 +72,18 @@ public class MainActivity extends Activity {
 
     }
 
+    private void updateView() {
+
+    }
+
     private BroadcastReceiver messageReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             if (intent.getAction().equals(NetworkManager.CHANNELS_RESPONSE)) {
                 int loginSuccess = (int)intent.getIntExtra("success", 0);
                 if (loginSuccess == 1) {
-                    //dataManager.setHasUser(true);
-                    //finish();
                     Log.v(TAG, "new channel data");
+                    updateView();
                 }
             }
         }
@@ -91,5 +93,7 @@ public class MainActivity extends Activity {
     protected void onPause() {
         super.onPause();
         LocalBroadcastManager.getInstance(this).unregisterReceiver(this.messageReceiver);
+
+        handler.removeCallbacksAndMessages(null);
     }
 }

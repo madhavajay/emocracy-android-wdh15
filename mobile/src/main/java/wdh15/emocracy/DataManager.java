@@ -5,6 +5,10 @@ import android.content.SharedPreferences;
 import android.util.Log;
 
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+
+import java.lang.reflect.Type;
+import java.util.List;
 
 /**
  * Created by madhavajay on 3/05/15.
@@ -14,6 +18,7 @@ public class DataManager {
     private static final String EMOCRACY_KEY = "emocracy";
     private static final String USER_KEY = "user";
     private static final String USER_MODEL_KEY = "user_model";
+    private static final String CHANNELS_MODEL_KEY = "channels_model";
 
     private static final String TAG = "DataManager";
     private Context context;
@@ -41,6 +46,37 @@ public class DataManager {
         setSettingKeyWithValue(USER_MODEL_KEY, userModelJson);
         Log.v(TAG, "saving user model json: " + userModelJson);
     }
+
+    public void setChannels(String channelsJson) {
+        setSettingKeyWithValue(CHANNELS_MODEL_KEY, channelsJson);
+        Log.v(TAG, "saving user model json: " + channelsJson);
+    }
+
+    public List<ChannelModel> getChannels() {
+        Type listOfChannelsObject = new TypeToken<List<ChannelModel>>(){}.getType();
+        String channelsJson = (String) getSetting(CHANNELS_MODEL_KEY, "String", "");
+        List<ChannelModel> channelModels = gson.fromJson(channelsJson, listOfChannelsObject);
+        return channelModels;
+    }
+
+    /*
+
+    Type collectionType = new TypeToken<Collection<Integer>>(){}.getType();
+Collection<Integer> ints2 = gson.fromJson(json, collectionType);
+
+    {
+  "channels": [
+    {
+      "name": "Hungry?",
+      "id": 2,
+      "yes": 10,
+      "no": 1,
+      "alive": 1,
+      "democracy": 1
+    }
+  ]
+}
+     */
 
     public UserModel getUser() {
         String userModelJson = (String) getSetting(USER_MODEL_KEY, "String", "");
