@@ -51,6 +51,7 @@ public class MainActivity extends Activity {
         } else {
             Log.v(TAG, "Already got user so show main screen");
 
+            NetworkManager.getInstance().getAllChannels(getApplication());
             setupRunLoop();
             // Register LocalBroadcastNotifcations
             LocalBroadcastManager.getInstance(this).registerReceiver(this.messageReceiver, new IntentFilter(NetworkManager.CHANNELS_RESPONSE));
@@ -84,13 +85,6 @@ public class MainActivity extends Activity {
         ChannelFragment firstChannel = (ChannelFragment) fragmentManager.findFragmentById(R.id.first_channel);
         ChannelFragment secondChannel = (ChannelFragment) fragmentManager.findFragmentById(R.id.second_channel);
         ChannelFragment thirdChannel = (ChannelFragment) fragmentManager.findFragmentById(R.id.third_channel);
-
-        firstChannel.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Log.v(TAG, "HELL YES IM CLICKING THE FRAGMENT");
-            }
-        });
 
         Button buttonAllChannels = (Button) findViewById(R.id.button_all_channels);
         buttonAllChannels.setOnClickListener(new View.OnClickListener() {
@@ -130,30 +124,61 @@ public class MainActivity extends Activity {
         ChannelFragment thirdChannel = (ChannelFragment) fragmentManager.findFragmentById(R.id.third_channel);
 
         if (channels.size() > 0) {
-            ChannelModel firstChannelModel = channels.remove(0);
+            final ChannelModel firstChannelModel = channels.remove(0);
             if (firstChannel != null) {
                 firstChannel.updateView(firstChannelModel);
+
+                firstChannel.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        Log.v(TAG, "HELL YES IM CLICKING THE FRAGMENT");
+                        Intent i;
+                        i = new Intent(MainActivity.this, ChannelVoteActivity.class);
+                        Bundle extras = new Bundle();
+                        extras.putInt("channel_id", firstChannelModel.id);
+                        i.putExtras(extras);
+                        startActivity(i);
+                    }
+                });
             }
         }
 
-        firstChannel.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-            }
-        });
-
         if (channels.size() > 0) {
-            ChannelModel secondChannelModel = channels.remove(0);
+            final ChannelModel secondChannelModel = channels.remove(0);
             if (secondChannelModel != null) {
                 secondChannel.updateView(secondChannelModel);
+
+                secondChannel.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        Intent i;
+                        i = new Intent(MainActivity.this, ChannelVoteActivity.class);
+                        Bundle extras = new Bundle();
+                        extras.putInt("channel_id", secondChannelModel.id);
+                        i.putExtras(extras);
+                        startActivity(i);
+                    }
+                });
             }
         }
 
         if (channels.size() > 0) {
-            ChannelModel thirdChannelModel = channels.remove(0);
+            final ChannelModel thirdChannelModel = channels.remove(0);
             if (thirdChannelModel != null) {
                 thirdChannel.updateView(thirdChannelModel);
+
+                thirdChannel.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        Log.v(TAG, "HELL YES IM CLICKING THE FRAGMENT");
+                        Intent i;
+                        i = new Intent(MainActivity.this, ChannelVoteActivity.class);
+                        Bundle extras = new Bundle();
+                        extras.putInt("channel_id", thirdChannelModel.id);
+                        i.putExtras(extras);
+                        startActivity(i);
+                    }
+                });
             }
         }
 

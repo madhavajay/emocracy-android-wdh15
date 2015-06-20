@@ -27,6 +27,8 @@ public class NetworkManager {
     private final String SERVER_URL = "http://192.168.170.47:8080/emocracy/api/";
     public static final String LOGIN_RESPONSE = "login_response";
     public static final String CHANNELS_RESPONSE = "channels_response";
+    public static final String VOTE_RESPONSE = "vote_response";
+
 
     private DataManager dataManager;
 
@@ -101,6 +103,60 @@ public class NetworkManager {
             this.postNotification(LOGIN_RESPONSE, "success", 1);
         } else {
             this.postNotification(LOGIN_RESPONSE, "success", 0);
+        }
+    }
+
+    public void voteYesForChannel(Application application, int channelId) {
+        this.voteForChannel(application, channelId, 1);
+    }
+
+    public void voteNoForChannel(Application application, int channelId) {
+        this.voteForChannel(application, channelId, 2);
+    }
+
+    private void voteForChannel(Application application, final int channelId, final int yesNo) {
+        this.application = application;
+        this.context = this.application.getApplicationContext();
+
+        new Thread(new Runnable() {
+
+            @Override
+            public void run() {
+                makeVoteForChannel(channelId, yesNo);
+            }
+        }).start();
+    }
+
+    private void makeVoteForChannel(int channelId, int yesNo) {
+        String url = getEndpointUrl("vote");
+        // http://192.168.170.47:8080/emocracy/api/vote
+        dataManager = new DataManager(this.context);
+        this.userModel = dataManager.getUser();
+
+        url += this.userModel.id + "/" + channelId + "/" + yesNo;
+        Log.v(TAG, "get all channels url constructed: " + url);
+
+        OkHttpClient client = new OkHttpClient();
+        Request request = new Request.Builder().url(url).build();
+
+        Response response = null;
+        try {
+            response = client.newCall(request).execute();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        Log.v(TAG, "Get all channels response: " + response);
+
+        if (response != null && response.code() >= 200 && response.code() <= 299) {
+            Log.v(TAG, "vote successful");
+            int votedForChannel = (yesNo == 0) ? 2 : 1;
+            // 0 is no vote, 1 is yes and 2 is no
+            Log.v(TAG, "saving vote to local store as " + yesNo + " becomes votedforchannelvalue" + votedForChannel);
+            dataManager.setUserVoteForChannelId(channelId, votedForChannel);
+            this.postNotification(VOTE_RESPONSE, "success", 1);
+        } else {
+            this.postNotification(VOTE_RESPONSE, "success", 0);
         }
     }
 

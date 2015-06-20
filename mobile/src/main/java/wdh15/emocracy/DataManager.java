@@ -16,6 +16,7 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -28,6 +29,7 @@ public class DataManager {
     private static final String USER_KEY = "user";
     private static final String USER_MODEL_KEY = "user_model";
     private static final String CHANNELS_MODEL_KEY = "channels_model";
+    private static final String VOTES_FOR_CHANNELS_MODEL_KEY = "votes_channels_model";
 
     private static final String TAG = "DataManager";
     private Context context;
@@ -63,6 +65,8 @@ public class DataManager {
 
         Log.v(TAG, "the object of channels: " + o.toString());
         List channels = (List) o.get("channels");
+
+
         Log.v(TAG, "my channels list " + channels);
 /*
 my channels list [{name=Hungry, id=1.0, yes=0.0, no=0.0, alive=0.0, democracy=null}, {name=Beertime, id=2.0, yes=0.0, no=0.0, alive=0.0, democracy=null}]
@@ -88,7 +92,19 @@ the object of channels: {channels=[{name=Hungry, id=1.0, yes=0.0, no=0.0, alive=
 
 
         Log.v(TAG, "saving user model json: " + channelsArrayJson);
+        updateChannelVotes();
     }
+
+    private void updateChannelVotes() {
+        ArrayList<ChannelModel> channels = this.getChannels();
+        for (ChannelModel channelModel : channels) {
+            if (channelModel.alive < 1) {
+                Log.v(TAG, "found a channel which is dead so wiping the local votes ID: " + channelModel.id);
+                this.setUserVoteForChannelId(channelModel.id, 0);
+            }
+        }
+    }
+
 
     public ArrayList<ChannelModel> getChannels() {
         //Type listOfChannelsObject = new TypeToken<List<ChannelModel>>(){}.getType();
@@ -104,6 +120,61 @@ the object of channels: {channels=[{name=Hungry, id=1.0, yes=0.0, no=0.0, alive=
 
 
         return channelModels;
+    }
+
+    public int getUserVoteForChannelId(int channelId) {
+        HashMap<Integer, Integer> votesForChannels = this.getVotesForChannels();
+        // key is channelId
+        Integer channelIdInteger = new Integer(channelId);
+        int vote = 0; // not vote state
+        if (votesForChannels.containsKey(channelIdInteger)) {
+            vote = votesForChannels.get(channelIdInteger);
+        }
+
+        Log.v(TAG, "the vote for the channel id: " + channelId + " is: " + vote);
+        return vote;
+    }
+
+    public void setUserVoteForChannelId(int channelId, int noValueYesNo) {
+        // noValueYesNo is 0, 1, 2
+        HashMap<Integer, Integer> votesForChannels = this.getVotesForChannels();
+        votesForChannels.put(channelId, noValueYesNo);
+
+        Type type = new TypeToken<Map<String, String>>(){}.getType();
+        String votesForChannelsJson = gson.toJson(votesForChannels, type);
+        Log.v(TAG, "saving this vote for channel JSON");
+        setSettingKeyWithValue(VOTES_FOR_CHANNELS_MODEL_KEY, votesForChannelsJson);
+    }
+
+    private HashMap<Integer, Integer> getVotesForChannels() {
+        // key is channelId
+        HashMap<Integer, Integer> votesForChannels = new HashMap<Integer, Integer>();
+        String votesForChannelsJson = (String) this.getSetting(VOTES_FOR_CHANNELS_MODEL_KEY, "String", "{}");
+        //String votesForChannelsJson = (String) this.getSetting(VOTES_FOR_CHANNELS_MODEL_KEY, "String", "{\"0\":\"0\"}");
+        Log.v(TAG, "before fail we get: " + votesForChannelsJson);
+        if (votesForChannelsJson.equals("\"\"") || votesForChannelsJson.equals("") ) {
+            //votesForChannelsJson = "{\"0\":\"0\"}";
+            votesForChannelsJson = "{}";
+            //votesForChannelsJson = gson.toJson(votesForChannelsJson);
+            //setSettingKeyWithValue(VOTES_FOR_CHANNELS_MODEL_KEY, votesForChannelsJson);
+        }
+
+        Type type = new TypeToken<Map<Integer, Integer>>(){}.getType();
+        Log.v(TAG, "wtf is the json looking like: " + votesForChannelsJson);
+        votesForChannels = gson.fromJson(votesForChannelsJson, type);
+
+        return votesForChannels;
+    }
+
+
+    public ChannelModel getChannelById(int channelId) {
+        ArrayList<ChannelModel> channels = this.getChannels();
+        for (ChannelModel channelModel : channels) {
+            if (channelModel.id == channelId) {
+                return channelModel;
+            }
+        }
+        return null;
     }
 
     /*
