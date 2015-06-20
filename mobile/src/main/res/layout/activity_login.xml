@@ -1,27 +1,42 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@drawable/background"
+    >
 
 
     <TextView
         android:id="@+id/label_login"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:text="Username:"
+        android:text="Username"
+        android:textSize="24dp"
+        android:padding="20dp"
+        android:layout_margin="20dp"
+        android:textStyle="bold"
+        android:layout_marginBottom="0dp"
         />
 
     <EditText
         android:id="@+id/input_username"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
+        android:padding="20dp"
+        android:layout_margin="20dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="0dp"
         />
 
     <Button
         android:id="@+id/button_login"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:text="LOGIN"
+        android:text="ENROLL"
+        android:padding="20dp"
+        android:layout_margin="20dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="0dp"
         />
 
 </LinearLayout>

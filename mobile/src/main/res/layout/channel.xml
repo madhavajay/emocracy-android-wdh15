@@ -15,6 +15,8 @@
         android:layout_height="wrap_content"
         android:text="Channel Name"
         android:padding="20dp"
+        android:textStyle="bold"
+        android:width="200dp"
         />
 
     <TextView
@@ -24,6 +26,8 @@
         android:padding="20dp"
         android:text="10"
         android:layout_toRightOf="@id/label_channel_name"
+        android:textStyle="bold"
+        android:textColor="#00FF00"
         />
 
     <TextView
@@ -33,6 +37,8 @@
         android:padding="20dp"
         android:text="5"
         android:layout_toRightOf="@id/label_channel_yes"
+        android:textStyle="bold"
+        android:textColor="#FF0000"
         />
     </RelativeLayout>
 </RelativeLayout>

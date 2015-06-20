@@ -1,7 +1,15 @@
 package wdh15.emocracy;
 
+import android.app.PendingIntent;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.BitmapFactory;
+import android.media.Ringtone;
+import android.media.RingtoneManager;
+import android.net.Uri;
+import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.NotificationManagerCompat;
 import android.util.Log;
 
 import com.google.gson.Gson;
@@ -87,28 +95,120 @@ the object of channels: {channels=[{name=Hungry, id=1.0, yes=0.0, no=0.0, alive=
         }
         */
         String channelsArrayJson = gson.toJson(channels);
+
+        // we need these for comparing
+        ArrayList<ChannelModel> oldChannels = this.getChannels();
+
         setSettingKeyWithValue(CHANNELS_MODEL_KEY, channelsArrayJson);
 
-
-
         Log.v(TAG, "saving user model json: " + channelsArrayJson);
-        updateChannelVotes();
+        updateBasedOnChannelState(oldChannels);
     }
 
-    private void updateChannelVotes() {
+    private void updateBasedOnChannelState(ArrayList<ChannelModel> oldChannels) {
         ArrayList<ChannelModel> channels = this.getChannels();
+        Log.v(TAG, "updating based on channel state");
+        Log.v(TAG, "old channels " + oldChannels);
+        Log.v(TAG, "new channels " + channels);
+
         for (ChannelModel channelModel : channels) {
             if (channelModel.alive < 1) {
                 Log.v(TAG, "found a channel which is dead so wiping the local votes ID: " + channelModel.id);
                 this.setUserVoteForChannelId(channelModel.id, 0);
             }
+
+            ChannelModel oldChannelModelMatch = null;
+            for (ChannelModel oldChannelModel : oldChannels) {
+                if (oldChannelModel.id == channelModel.id) {
+                    Log.v(TAG, "found old channel to compare to");
+                    oldChannelModelMatch = oldChannelModel;
+                }
+            }
+
+            Log.v(TAG, "old timestamp " + oldChannelModelMatch.timestamp + " new timestamp " + channelModel.timestamp);
+            Log.v(TAG, "values of " + oldChannelModelMatch + " " +channelModel.timestamp + " " + oldChannelModelMatch.timestamp);
+            if (oldChannelModelMatch == null || channelModel.timestamp > oldChannelModelMatch.timestamp) {
+                // we can check for notifications and send them
+                int democracy = -1;
+                try {
+                     democracy = channelModel.democracy;
+                    if (democracy == 0 || democracy == 1) {
+                        Log.v(TAG, "we have a result for the vote " + democracy);
+                        this.sendNotification(1, channelModel);
+                    }
+                } catch (Exception e) {
+                    Log.v(TAG, e.toString());
+                }
+
+                Log.v(TAG, "what is democracy now? " + democracy);
+                if (democracy == -1 && channelModel.alive > 0) {
+                    Log.v(TAG, "we have a new thing to vote on: " + channelModel.name);
+                    this.sendNotification(0, channelModel);
+                }
+            }
+        }
+    }
+
+    private void sendNotification(int notficationType, ChannelModel channelModel) {
+        int notificationId = 1;
+        // Build intent for notification content
+        Intent viewIntent = new Intent(this.context, MainActivity.class);
+        PendingIntent viewPendingIntent = PendingIntent.getActivity(this.context, 0, viewIntent, 0);
+
+        NotificationCompat.WearableExtender wearableExtender =
+                new NotificationCompat.WearableExtender()
+                        .setHintHideIcon(false)
+                        .setBackground(BitmapFactory.decodeResource(
+                                this.context.getResources(), R.mipmap.ic_launcher))
+                        .clearActions();
+
+
+        String message = channelModel.name;
+        String title = channelModel.name;
+        Log.v(TAG, "so were sending a notifcation for channel: " + channelModel.name + " with " + channelModel.toString());
+        if (notficationType == 1) {
+            if (channelModel.democracy == 1) {
+                message += " has WON!";
+                title += " has WON!";
+            } else if (channelModel.democracy == 0) {
+                message += " has LOST!";
+                title += " has LOST!";
+            }
+        } else if (notficationType == 0) {
+
+        }
+
+        NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this.context)
+                // ..- .--. = UP in morse code
+                // wait, on, wait, on, wait etc...
+                .setVibrate(new long[]{0, 200, 200, 200, 200, 400, 200, 200, 200, 400, 200, 400, 200, 200})
+                .setSmallIcon(R.mipmap.ic_launcher)
+                .setContentTitle(title)
+                .setContentText(message)
+                .setPriority(NotificationCompat.PRIORITY_MAX)
+                .setLocalOnly(false)
+                .extend(wearableExtender)
+                .setContentIntent(viewPendingIntent);
+
+        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this.context);
+
+        notificationManager.notify(notificationId, notificationBuilder.build());
+
+        try {
+            Uri notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+            Ringtone r = RingtoneManager.getRingtone(this.context, notification);
+            r.play();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
 
     public ArrayList<ChannelModel> getChannels() {
         //Type listOfChannelsObject = new TypeToken<List<ChannelModel>>(){}.getType();
-        String channelsJson = (String) getSetting(CHANNELS_MODEL_KEY, "String", "");
+        String channelsJson = (String) getSetting(CHANNELS_MODEL_KEY, "String", "[]");
+
+        Log.v(TAG, "loading to inflate channels json is: " + channelsJson);
 
         Type collectionType = new TypeToken<Collection<ChannelModel>>(){}.getType();
         Collection<ChannelModel> channelModelsArray = gson.fromJson(channelsJson, collectionType);

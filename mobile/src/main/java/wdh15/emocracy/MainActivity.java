@@ -11,14 +11,11 @@ import android.os.Handler;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
-import android.widget.RelativeLayout;
-import android.widget.TextView;
+import android.widget.AdapterView;
+import android.widget.ListView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
-import java.util.GregorianCalendar;
-import java.util.List;
 
 /**
  * Created by madhavajay on 20/06/15.
@@ -30,6 +27,10 @@ public class MainActivity extends Activity {
     private DataManager dataManager;
 
     private final Handler handler = new Handler();
+
+    private ChannelListAdapter adapter;
+    private ListView listView;
+    public ArrayList<ChannelModel> channels;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,11 +82,38 @@ public class MainActivity extends Activity {
 
     private void setupView() {
         Log.v(TAG, "calling setup view");
+
+        listView = (ListView) findViewById(R.id.list_view);
+
+        channels = new ArrayList<ChannelModel>();
+        Log.v(TAG, "we have a channels list to apply to the adapter " + channels.toString());
+
+        adapter = new ChannelListAdapter(this, R.layout.channel, channels);
+        listView.setAdapter(adapter);
+
+        listView.setOnItemClickListener(new android.widget.AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Log.v(TAG, "clicked on a listview item");
+
+                //CardModel card = (CardModel) listView.getItemAtPosition(position);
+                /*
+                Intent i;
+                i = new Intent(getContext(), CardSummaryActivity.class);
+                i.putExtra("cardsyselectroid", card.cardsyselectroid);
+                startActivity(i);
+                */
+
+            }
+        });
+
+        /*
         FragmentManager fragmentManager = getFragmentManager();
         ChannelFragment firstChannel = (ChannelFragment) fragmentManager.findFragmentById(R.id.first_channel);
         ChannelFragment secondChannel = (ChannelFragment) fragmentManager.findFragmentById(R.id.second_channel);
         ChannelFragment thirdChannel = (ChannelFragment) fragmentManager.findFragmentById(R.id.third_channel);
-
+        */
+        /*
         Button buttonAllChannels = (Button) findViewById(R.id.button_all_channels);
         buttonAllChannels.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -109,19 +137,25 @@ public class MainActivity extends Activity {
                 Log.v(TAG, "Clicked on sad mood button");
             }
         });
-
+*/
     }
 
     private void updateView() {
-        ArrayList<ChannelModel> channels = dataManager.getChannels();
+        channels.clear();
+        channels.addAll(dataManager.getChannels());
+        adapter.notifyDataSetChanged();
 
         Log.v(TAG, "updateview with these channels: " + channels.toString());
 
         Log.v(TAG, "calling update view");
+        /*
         FragmentManager fragmentManager = getFragmentManager();
         ChannelFragment firstChannel = (ChannelFragment) fragmentManager.findFragmentById(R.id.first_channel);
         ChannelFragment secondChannel = (ChannelFragment) fragmentManager.findFragmentById(R.id.second_channel);
         ChannelFragment thirdChannel = (ChannelFragment) fragmentManager.findFragmentById(R.id.third_channel);
+           */
+
+        /*
 
         if (channels.size() > 0) {
             final ChannelModel firstChannelModel = channels.remove(0);
@@ -181,11 +215,14 @@ public class MainActivity extends Activity {
                 });
             }
         }
+        */
 
+            /*
         TextView labelHappyNumber = (TextView) findViewById(R.id.label_number_happy);
         labelHappyNumber.setText("" + 1);
         TextView labelSadNumber = (TextView) findViewById(R.id.label_number_sad);
         labelSadNumber.setText("" + 0);
+        */
     }
 
     private BroadcastReceiver messageReceiver = new BroadcastReceiver() {
@@ -196,6 +233,8 @@ public class MainActivity extends Activity {
                 if (newChannelData == 1) {
                     Log.v(TAG, "new channel data");
                     updateView();
+                } else {
+                    Toast.makeText(MainActivity.this, "Server not responding, trying again.", Toast.LENGTH_SHORT).show();
                 }
             }
         }

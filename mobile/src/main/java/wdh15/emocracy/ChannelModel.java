@@ -9,7 +9,12 @@ public class ChannelModel {
     public int yes;
     public int no;
     public int alive;
-    public int democracy;
+    public Integer democracy;
+    public long timestamp;
+
+    public String toString() {
+        return "id " + id + " name " + name + " yes " + yes + " no " + no + " alive " + alive + " democracy " + democracy + " timestamp " + timestamp;
+    }
 
     /*
 {
