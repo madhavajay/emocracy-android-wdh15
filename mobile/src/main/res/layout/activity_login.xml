@@ -2,41 +2,52 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/background"
+    android:background="#00df90"
     >
 
 
-    <TextView
-        android:id="@+id/label_login"
-        android:layout_width="fill_parent"
+    <ImageView
+        android:src="@drawable/home_logo"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Username"
-        android:textSize="24dp"
-        android:padding="20dp"
-        android:layout_margin="20dp"
-        android:textStyle="bold"
-        android:layout_marginBottom="0dp"
-        />
+        android:gravity="center_horizontal"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="80dp"
+        android:layout_marginBottom="20dp" />
 
     <EditText
         android:id="@+id/input_username"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:padding="20dp"
-        android:layout_margin="20dp"
-        android:layout_marginTop="10dp"
-        android:layout_marginBottom="0dp"
+        android:gravity="center_horizontal"
+        android:layout_marginRight="80dp"
+        android:layout_marginLeft="80dp"
+        android:textColor="#FFFFFF"
+        android:shadowColor="#FFFFFF"
+        android:textSize="24dp"
+        android:textStyle="bold"
         />
 
-    <Button
-        android:id="@+id/button_login"
+    <TextView
+        android:id="@+id/label_login"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:text="ENROLL"
-        android:padding="20dp"
-        android:layout_margin="20dp"
-        android:layout_marginTop="10dp"
+        android:text="What is your name?"
+        android:textSize="24dp"
+
         android:layout_marginBottom="0dp"
-        />
+        android:gravity="center_horizontal"
+        android:textColor="#FFFFFF"
+        android:layout_marginTop="5dp" />
+
+    <Button
+        android:background="@drawable/home_button"
+        android:id="@+id/button_login"
+        android:gravity="center_horizontal"
+        android:layout_gravity="center_horizontal"
+        style="?android:attr/borderlessButtonStyle"
+        android:layout_width="66dp"
+        android:layout_height="98dp"
+        android:layout_marginTop="20dp" />
 
 </LinearLayout>

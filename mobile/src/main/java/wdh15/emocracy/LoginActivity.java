@@ -5,6 +5,8 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
@@ -34,6 +36,8 @@ public class LoginActivity extends Activity {
         dataManager = new DataManager(this);
 
         usernameInput = (EditText) findViewById(R.id.input_username);
+        usernameInput.getBackground().setColorFilter(Color.WHITE, PorterDuff.Mode.SRC_IN);
+
 
         // Register LocalBroadcastNotifcations
         LocalBroadcastManager.getInstance(this).registerReceiver(this.messageReceiver, new IntentFilter(NetworkManager.LOGIN_RESPONSE));

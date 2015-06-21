@@ -125,8 +125,9 @@ the object of channels: {channels=[{name=Hungry, id=1.0, yes=0.0, no=0.0, alive=
                 }
             }
 
-            Log.v(TAG, "old timestamp " + oldChannelModelMatch.timestamp + " new timestamp " + channelModel.timestamp);
-            Log.v(TAG, "values of " + oldChannelModelMatch + " " +channelModel.timestamp + " " + oldChannelModelMatch.timestamp);
+            //Log.v(TAG, "old timestamp " + oldChannelModelMatch.timestamp + " new timestamp " + channelModel.timestamp);
+            //Log.v(TAG, "values of " + oldChannelModelMatch + " " +channelModel.timestamp + " " + oldChannelModelMatch.timestamp);
+
             if (oldChannelModelMatch == null || channelModel.timestamp > oldChannelModelMatch.timestamp) {
                 // we can check for notifications and send them
                 int democracy = -1;
