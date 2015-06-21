@@ -232,15 +232,30 @@ the object of channels: {channels=[{name=Hungry, id=1.0, yes=0.0, no=0.0, alive=
 
         NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this.context);
 
-        notificationManager.notify(notificationId, notificationBuilder.build());
-
         try {
-            Uri notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
-            Ringtone r = RingtoneManager.getRingtone(this.context, notification);
-            r.play();
+            if (notficationType == 0) {
+                Uri notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+                Ringtone r = RingtoneManager.getRingtone(this.context, notification);
+                r.play();
+            } else if (notficationType == 1) {
+                Log.v(TAG, "are we here for sound?");
+                Uri jingle = null;
+                if (channelModel.democracy == 1) {
+                    jingle = Uri.parse("android.resource://wdh15.emocracy/raw/good");
+                } else if (channelModel.democracy == 0) {
+                    jingle = Uri.parse("android.resource://wdh15.emocracy/raw/bad");
+                }
+
+                Log.v(TAG, "heres our audio link: " + jingle);
+                notificationBuilder.setSound(jingle);
+            }
+
         } catch (Exception e) {
             e.printStackTrace();
         }
+
+        notificationManager.notify(notificationId, notificationBuilder.build());
+
     }
 
 
