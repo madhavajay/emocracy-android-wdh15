@@ -73,11 +73,11 @@ public class MainActivity extends Activity {
                 Log.v(TAG, "entered run loop fetch channel data and notifcations");
 
                 NetworkManager.getInstance().getAllChannels(getApplication());
-                handler.postDelayed(this, 5000);
+                handler.postDelayed(this, 3000);
             }
         };
 
-        handler.postDelayed(runnable, 5000);
+        handler.postDelayed(runnable, 3000);
     }
 
     private void setupView() {

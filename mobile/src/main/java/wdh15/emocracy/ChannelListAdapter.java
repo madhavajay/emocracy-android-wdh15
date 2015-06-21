@@ -53,6 +53,8 @@ public class ChannelListAdapter extends ArrayAdapter<ChannelModel> {
             }
         } else if (channelModel.alive > 0) {
             v.setBackgroundColor(Color.parseColor("#ffb800"));
+        } else {
+            v.setBackgroundColor(Color.parseColor("#9b9b9b"));
         }
 
         if (channelModel != null) {

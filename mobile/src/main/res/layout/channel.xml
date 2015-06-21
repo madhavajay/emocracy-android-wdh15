@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="wrap_content" android:layout_height="wrap_content"
-    >
+    android:layout_width="wrap_content" android:layout_height="wrap_content">
 
     <ImageView
         android:id="@+id/channel_icon_small"
@@ -30,16 +29,20 @@
         android:layout_toRightOf="@id/channel_icon_small"
         />
 
-    <ImageView
-        android:layout_toRightOf="@id/label_channel_name"
-        android:id="@+id/channel_icon_yes"
-        android:src="@drawable/icon_yes_white"
-        android:layout_width="30dp"
-        android:layout_height="30dp"
-        android:layout_marginTop="20dp"
-        android:layout_marginBottom="20dp"
-        />
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        >
+        <ImageView
 
+            android:id="@+id/channel_icon_yes"
+            android:src="@drawable/icon_yes_white"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginBottom="20dp"
+            />
     <TextView
         android:id="@+id/label_channel_yes"
         android:layout_toRightOf="@id/channel_icon_yes"
@@ -77,8 +80,9 @@
         android:layout_width="30dp"
         android:layout_height="30dp"
         android:layout_marginLeft="0dp"
-        android:layout_marginRight="5dp"
+        android:layout_marginRight="20dp"
         android:layout_marginTop="20dp"
         android:layout_marginBottom="20dp"
         />
+    </RelativeLayout>
 </RelativeLayout>

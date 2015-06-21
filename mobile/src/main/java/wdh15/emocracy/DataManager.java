@@ -145,7 +145,6 @@ the object of channels: {channels=[{name=Hungry, id=1.0, yes=0.0, no=0.0, alive=
                 }
 
                 Log.v(TAG, "what is democracy now? " + democracy);
-                channelVoteForUser = 0; // DEBUG
                 if (democracy == -1 && channelModel.alive > 0 && channelVoteForUser == 0) {
                     Log.v(TAG, "we have a new thing to vote on: " + channelModel.name);
                     this.sendNotification(0, channelModel);
@@ -160,10 +159,13 @@ the object of channels: {channels=[{name=Hungry, id=1.0, yes=0.0, no=0.0, alive=
 
         int iconId = this.context.getResources().getIdentifier("wdh15.emocracy:drawable/" + iconName, null, null);
 
-        int notificationId = 1;
+        int notificationId = (int) (System.currentTimeMillis() / 1000L);
+
+
         // Build intent for notification content
-        Intent viewIntent = new Intent(this.context, MainActivity.class);
-        PendingIntent viewPendingIntent = PendingIntent.getActivity(this.context, 0, viewIntent, 0);
+        Intent viewIntent = new Intent(this.context, ChannelVoteActivity.class);
+        viewIntent.putExtra("channel_id", channelModel.id);
+        PendingIntent viewPendingIntent = PendingIntent.getActivity(this.context, notificationId, viewIntent, PendingIntent.FLAG_ONE_SHOT);
 
         NotificationCompat.WearableExtender wearableExtender =
                 new NotificationCompat.WearableExtender()
@@ -188,6 +190,17 @@ the object of channels: {channels=[{name=Hungry, id=1.0, yes=0.0, no=0.0, alive=
 
         }
 
+        /*
+        Intent notificationIntent = new Intent(context, Main.class);
+	notificationIntent.putExtra("item_id", "1001"); // <-- HERE I PUT THE EXTRA VALUE
+	PendingIntent contentIntent = PendingIntent.getActivity(context, 0, notificationIntent, 0);
+	notif.contentIntent = contentIntent;
+         */
+
+
+
+
+
         NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this.context)
                 // ..- .--. = UP in morse code
                 // wait, on, wait, on, wait etc...
@@ -198,9 +211,24 @@ the object of channels: {channels=[{name=Hungry, id=1.0, yes=0.0, no=0.0, alive=
                 .setPriority(NotificationCompat.PRIORITY_MAX)
                 .setLocalOnly(false)
                 .extend(wearableExtender)
-                .setContentIntent(viewPendingIntent)
-                .addAction(R.drawable.icon_yes_white, "Yes", viewPendingIntent)
-                .addAction(R.drawable.icon_no_white, "No", viewPendingIntent);
+                .setContentIntent(viewPendingIntent);
+        notificationBuilder.setAutoCancel(true);
+
+        if (notficationType == 0) {
+            Intent voteYesIntent = new Intent(this.context, ChannelVoteActivity.class);
+            voteYesIntent.putExtra("channel_id", channelModel.id);
+            voteYesIntent.putExtra("yes_no", 1);
+
+            PendingIntent voteYesPendingIntent = PendingIntent.getActivity(this.context, notificationId + 1, voteYesIntent, PendingIntent.FLAG_ONE_SHOT);
+
+            Intent voteNoIntent = new Intent(this.context, ChannelVoteActivity.class);
+            voteNoIntent.putExtra("channel_id", channelModel.id);
+            voteNoIntent.putExtra("yes_no", 0);
+            PendingIntent voteNoPendingIntent = PendingIntent.getActivity(this.context, notificationId + 2, voteNoIntent, PendingIntent.FLAG_ONE_SHOT);
+
+            notificationBuilder.addAction(R.drawable.icon_yes_white_wear, "Yes", voteYesPendingIntent);
+            notificationBuilder.addAction(R.drawable.icon_no_white_wear, "No", voteNoPendingIntent);
+        }
 
         NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this.context);
 

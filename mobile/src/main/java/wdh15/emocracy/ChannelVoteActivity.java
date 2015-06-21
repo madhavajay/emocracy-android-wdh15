@@ -38,25 +38,44 @@ public class ChannelVoteActivity extends Activity {
         super.onCreate(savedInstanceState);
 
         getActionBar().hide();
+        setContentView(R.layout.activity_channel_vote);
+        dataManager = new DataManager(this);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+
         channelId = getIntent().getIntExtra("channel_id", 0);
+        channelModel = dataManager.getChannelById(channelId);
+
+        int voteYesNo = getIntent().getIntExtra("yes_no", -1);
+        Log.v(TAG, "vote yes no from intent is: " +voteYesNo);
+        Log.v(TAG, "LOADING channel vote with channel id: " + channelModel.id + " channe name: " + channelModel.name + " yesno = " + voteYesNo);
+        if (voteYesNo > -1) {
+            if (voteYesNo == 1) {
+                NetworkManager.getInstance().voteYesForChannel(getApplication(), channelModel.id);
+                disableButtons();
+            } else if (voteYesNo == 0) {
+                NetworkManager.getInstance().voteNoForChannel(getApplication(), channelModel.id);
+                disableButtons();
+            }
+        }
+
         Log.v(TAG, "channel id is: " +  channelId);
 
-        dataManager = new DataManager(this);
-        channelModel = dataManager.getChannelById(channelId);
+
         if (channelModel == null) {
             Toast.makeText(ChannelVoteActivity.this, "Can't find Channel ID: " + channelId, Toast.LENGTH_SHORT).show();
             finish();
         }
 
         getActionBar().setTitle(channelModel.name);
-        setContentView(R.layout.activity_channel_vote);
+
 
         setupView();
-    }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
         // Register LocalBroadcastNotifcations
         LocalBroadcastManager.getInstance(this).registerReceiver(this.messageReceiver, new IntentFilter(NetworkManager.VOTE_RESPONSE));
     }
