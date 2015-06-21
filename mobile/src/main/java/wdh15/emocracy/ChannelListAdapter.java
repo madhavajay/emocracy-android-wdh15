@@ -1,11 +1,13 @@
 package wdh15.emocracy;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -36,6 +38,23 @@ public class ChannelListAdapter extends ArrayAdapter<ChannelModel> {
 
         ChannelModel channelModel = items.get(position);
 
+        int democracy = -2;
+        try {
+            democracy = channelModel.democracy;
+        } catch (Exception e) {
+
+        }
+
+        if (democracy == 0 || democracy == 1) {
+            if (democracy == 1) {
+                v.setBackgroundColor(Color.parseColor("#00df90"));
+            } else {
+                v.setBackgroundColor(Color.parseColor("#ff0391"));
+            }
+        } else if (channelModel.alive > 0) {
+            v.setBackgroundColor(Color.parseColor("#ffb800"));
+        }
+
         if (channelModel != null) {
             TextView labelChannelName = (TextView) v.findViewById(R.id.label_channel_name);
             labelChannelName.setText(channelModel.name);
@@ -45,7 +64,14 @@ public class ChannelListAdapter extends ArrayAdapter<ChannelModel> {
 
             TextView labelNo = (TextView) v.findViewById(R.id.label_channel_no);
             labelNo.setText("" + channelModel.no);
+
+            ImageView imageIcon = (ImageView) v.findViewById(R.id.channel_icon_small);
+            String iconName = "icon_" + channelModel.id + "_white";
+
+            int iconId = this.context.getResources().getIdentifier("wdh15.emocracy:drawable/" + iconName, null, null);
+            imageIcon.setImageResource(iconId);
         }
+
         return v;
     }
 

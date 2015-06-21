@@ -96,48 +96,16 @@ public class MainActivity extends Activity {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Log.v(TAG, "clicked on a listview item");
 
-                //CardModel card = (CardModel) listView.getItemAtPosition(position);
-                /*
+                ChannelModel channelModel = (ChannelModel) listView.getItemAtPosition(position);
                 Intent i;
-                i = new Intent(getContext(), CardSummaryActivity.class);
-                i.putExtra("cardsyselectroid", card.cardsyselectroid);
+                i = new Intent(MainActivity.this, ChannelVoteActivity.class);
+                Bundle extras = new Bundle();
+                extras.putInt("channel_id", channelModel.id);
+                i.putExtras(extras);
                 startActivity(i);
-                */
 
             }
         });
-
-        /*
-        FragmentManager fragmentManager = getFragmentManager();
-        ChannelFragment firstChannel = (ChannelFragment) fragmentManager.findFragmentById(R.id.first_channel);
-        ChannelFragment secondChannel = (ChannelFragment) fragmentManager.findFragmentById(R.id.second_channel);
-        ChannelFragment thirdChannel = (ChannelFragment) fragmentManager.findFragmentById(R.id.third_channel);
-        */
-        /*
-        Button buttonAllChannels = (Button) findViewById(R.id.button_all_channels);
-        buttonAllChannels.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Log.v(TAG, "clicked on all channels button");
-            }
-        });
-
-        Button buttonMoodHappy = (Button) findViewById(R.id.button_mood_happy);
-        buttonMoodHappy.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Log.v(TAG, "Clicked on happy mood button");
-            }
-        });
-
-        Button buttonMoodSad = (Button) findViewById(R.id.button_mood_sad);
-        buttonMoodSad.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Log.v(TAG, "Clicked on sad mood button");
-            }
-        });
-*/
     }
 
     private void updateView() {
@@ -148,81 +116,6 @@ public class MainActivity extends Activity {
         Log.v(TAG, "updateview with these channels: " + channels.toString());
 
         Log.v(TAG, "calling update view");
-        /*
-        FragmentManager fragmentManager = getFragmentManager();
-        ChannelFragment firstChannel = (ChannelFragment) fragmentManager.findFragmentById(R.id.first_channel);
-        ChannelFragment secondChannel = (ChannelFragment) fragmentManager.findFragmentById(R.id.second_channel);
-        ChannelFragment thirdChannel = (ChannelFragment) fragmentManager.findFragmentById(R.id.third_channel);
-           */
-
-        /*
-
-        if (channels.size() > 0) {
-            final ChannelModel firstChannelModel = channels.remove(0);
-            if (firstChannel != null) {
-                firstChannel.updateView(firstChannelModel);
-
-                firstChannel.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        Log.v(TAG, "HELL YES IM CLICKING THE FRAGMENT");
-                        Intent i;
-                        i = new Intent(MainActivity.this, ChannelVoteActivity.class);
-                        Bundle extras = new Bundle();
-                        extras.putInt("channel_id", firstChannelModel.id);
-                        i.putExtras(extras);
-                        startActivity(i);
-                    }
-                });
-            }
-        }
-
-        if (channels.size() > 0) {
-            final ChannelModel secondChannelModel = channels.remove(0);
-            if (secondChannelModel != null) {
-                secondChannel.updateView(secondChannelModel);
-
-                secondChannel.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        Intent i;
-                        i = new Intent(MainActivity.this, ChannelVoteActivity.class);
-                        Bundle extras = new Bundle();
-                        extras.putInt("channel_id", secondChannelModel.id);
-                        i.putExtras(extras);
-                        startActivity(i);
-                    }
-                });
-            }
-        }
-
-        if (channels.size() > 0) {
-            final ChannelModel thirdChannelModel = channels.remove(0);
-            if (thirdChannelModel != null) {
-                thirdChannel.updateView(thirdChannelModel);
-
-                thirdChannel.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        Log.v(TAG, "HELL YES IM CLICKING THE FRAGMENT");
-                        Intent i;
-                        i = new Intent(MainActivity.this, ChannelVoteActivity.class);
-                        Bundle extras = new Bundle();
-                        extras.putInt("channel_id", thirdChannelModel.id);
-                        i.putExtras(extras);
-                        startActivity(i);
-                    }
-                });
-            }
-        }
-        */
-
-            /*
-        TextView labelHappyNumber = (TextView) findViewById(R.id.label_number_happy);
-        labelHappyNumber.setText("" + 1);
-        TextView labelSadNumber = (TextView) findViewById(R.id.label_number_sad);
-        labelSadNumber.setText("" + 0);
-        */
     }
 
     private BroadcastReceiver messageReceiver = new BroadcastReceiver() {

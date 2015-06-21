@@ -5,7 +5,6 @@
     android:background="#00df90"
     >
 
-
     <ImageView
         android:src="@drawable/home_logo"
         android:layout_width="wrap_content"
@@ -33,11 +32,10 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:text="What is your name?"
-        android:textSize="24dp"
-
         android:layout_marginBottom="0dp"
         android:gravity="center_horizontal"
         android:textColor="#FFFFFF"
+        android:textSize="24dp"
         android:layout_marginTop="5dp" />
 
     <Button

@@ -7,13 +7,17 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Color;
 import android.graphics.Typeface;
+import android.media.Image;
 import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import org.w3c.dom.Text;
 
 /**
  * Created by madhavajay on 20/06/15.
@@ -33,6 +37,7 @@ public class ChannelVoteActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        getActionBar().hide();
         channelId = getIntent().getIntExtra("channel_id", 0);
         Log.v(TAG, "channel id is: " +  channelId);
 
@@ -44,12 +49,7 @@ public class ChannelVoteActivity extends Activity {
         }
 
         getActionBar().setTitle(channelModel.name);
-        if (channelModel.alive == 1) {
-            setContentView(R.layout.activity_channel_vote);
-        } else {
-            setContentView(R.layout.activity_channel_vote);
-            //setContentView(R.layout.activity_channel_vote_start);
-        }
+        setContentView(R.layout.activity_channel_vote);
 
         setupView();
     }
@@ -72,20 +72,41 @@ public class ChannelVoteActivity extends Activity {
                     finish();
                 } else {
                     Toast.makeText(getApplicationContext(), "Your vote failed, please try again", Toast.LENGTH_LONG).show();
-                    if (buttonVoteYes != null) {
-                        buttonVoteYes.setEnabled(true);
-                    }
-
-                    if (buttonVoteNo != null) {
-                        buttonVoteNo.setEnabled(true);
-                    }
+                    enableButtons();
                     setupView();
                 }
             }
         }
     };
 
+    private void enableButtons() {
+        if (buttonVoteYes != null) {
+            buttonVoteYes.setEnabled(true);
+            buttonVoteYes.setBackgroundResource(R.drawable.icon_yes);
+        }
+
+        if (buttonVoteNo != null) {
+            buttonVoteNo.setEnabled(true);
+            buttonVoteNo.setBackgroundResource(R.drawable.icon_no);
+        }
+    }
+
+    private void disableButtons() {
+        if (buttonVoteYes != null) {
+            buttonVoteYes.setEnabled(false);
+            buttonVoteYes.setBackgroundResource(R.drawable.icon_yes_disabled);
+        }
+
+        if (buttonVoteNo != null) {
+            buttonVoteNo.setEnabled(false);
+            buttonVoteNo.setBackgroundResource(R.drawable.icon_no_disabled);
+        }
+    }
+
     private void setupView() {
+
+        TextView labelVoteName = (TextView) findViewById(R.id.label_vote_name);
+        labelVoteName.setText(channelModel.name);
 
         TextView labelVoteYes = (TextView) findViewById(R.id.label_vote_yes);
         labelVoteYes.setText("" + channelModel.yes);
@@ -93,36 +114,21 @@ public class ChannelVoteActivity extends Activity {
         TextView labelVoteNo = (TextView) findViewById(R.id.label_vote_no);
         labelVoteNo.setText("" + channelModel.no);
 
+        ImageView imageIcon = (ImageView) findViewById(R.id.channel_icon_large);
+        String iconName = "icon_" + channelModel.id;
+
+        int iconId = getResources().getIdentifier("wdh15.emocracy:drawable/" + iconName, null, null);
+        imageIcon.setImageResource(iconId);
 
         buttonVoteYes = (Button) findViewById(R.id.button_vote_yes);
         buttonVoteNo = (Button) findViewById(R.id.button_vote_no);
-
-        int userVoteForChannelId = dataManager.getUserVoteForChannelId(channelModel.id);
-        Log.v(TAG, "the user has voted for this channel with the value: " + userVoteForChannelId);
-
-        if (userVoteForChannelId == 1) {
-            buttonVoteYes.setTypeface(Typeface.DEFAULT_BOLD);
-            buttonVoteYes.setBackgroundColor(Color.GREEN);
-        }
-
-        if (userVoteForChannelId == 2) {
-            buttonVoteNo.setTypeface(Typeface.DEFAULT_BOLD);
-            buttonVoteNo.setBackgroundColor(Color.GREEN);
-        }
-
-        if (userVoteForChannelId > 0) {
-            buttonVoteYes.setEnabled(false);
-            buttonVoteNo.setEnabled(false);
-        }
 
         buttonVoteYes.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Log.v(TAG, "clicked vote yes");
                 NetworkManager.getInstance().voteYesForChannel(getApplication(), channelModel.id);
-                buttonVoteYes.setEnabled(false);
-                buttonVoteNo.setEnabled(false);
-                buttonVoteYes.setTypeface(Typeface.DEFAULT_BOLD);
+                disableButtons();
             }
         });
 
@@ -132,11 +138,16 @@ public class ChannelVoteActivity extends Activity {
             public void onClick(View view) {
                 Log.v(TAG, "clicked vote NO");
                 NetworkManager.getInstance().voteNoForChannel(getApplication(), channelModel.id);
-                buttonVoteYes.setEnabled(false);
-                buttonVoteNo.setEnabled(false);
-                buttonVoteNo.setTypeface(Typeface.DEFAULT_BOLD);
+                disableButtons();
             }
         });
+
+        int userVoteForChannelId = dataManager.getUserVoteForChannelId(channelModel.id);
+        Log.v(TAG, "the user has voted for this channel with the value: " + userVoteForChannelId);
+
+        if (userVoteForChannelId > 0) {
+            this.disableButtons();
+        }
     }
 
     @Override

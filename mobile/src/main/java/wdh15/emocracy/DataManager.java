@@ -11,6 +11,7 @@ import android.net.Uri;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
 import android.util.Log;
+import android.widget.ImageView;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -128,6 +129,8 @@ the object of channels: {channels=[{name=Hungry, id=1.0, yes=0.0, no=0.0, alive=
             //Log.v(TAG, "old timestamp " + oldChannelModelMatch.timestamp + " new timestamp " + channelModel.timestamp);
             //Log.v(TAG, "values of " + oldChannelModelMatch + " " +channelModel.timestamp + " " + oldChannelModelMatch.timestamp);
 
+
+            int channelVoteForUser = this.getUserVoteForChannelId(channelModel.id);
             if (oldChannelModelMatch == null || channelModel.timestamp > oldChannelModelMatch.timestamp) {
                 // we can check for notifications and send them
                 int democracy = -1;
@@ -142,7 +145,8 @@ the object of channels: {channels=[{name=Hungry, id=1.0, yes=0.0, no=0.0, alive=
                 }
 
                 Log.v(TAG, "what is democracy now? " + democracy);
-                if (democracy == -1 && channelModel.alive > 0) {
+                channelVoteForUser = 0; // DEBUG
+                if (democracy == -1 && channelModel.alive > 0 && channelVoteForUser == 0) {
                     Log.v(TAG, "we have a new thing to vote on: " + channelModel.name);
                     this.sendNotification(0, channelModel);
                 }
@@ -151,6 +155,11 @@ the object of channels: {channels=[{name=Hungry, id=1.0, yes=0.0, no=0.0, alive=
     }
 
     private void sendNotification(int notficationType, ChannelModel channelModel) {
+
+        String iconName = "icon_" + channelModel.id + "_white";
+
+        int iconId = this.context.getResources().getIdentifier("wdh15.emocracy:drawable/" + iconName, null, null);
+
         int notificationId = 1;
         // Build intent for notification content
         Intent viewIntent = new Intent(this.context, MainActivity.class);
@@ -160,7 +169,7 @@ the object of channels: {channels=[{name=Hungry, id=1.0, yes=0.0, no=0.0, alive=
                 new NotificationCompat.WearableExtender()
                         .setHintHideIcon(false)
                         .setBackground(BitmapFactory.decodeResource(
-                                this.context.getResources(), R.mipmap.ic_launcher))
+                                this.context.getResources(), R.drawable.notification_icon))
                         .clearActions();
 
 
@@ -183,13 +192,15 @@ the object of channels: {channels=[{name=Hungry, id=1.0, yes=0.0, no=0.0, alive=
                 // ..- .--. = UP in morse code
                 // wait, on, wait, on, wait etc...
                 .setVibrate(new long[]{0, 200, 200, 200, 200, 400, 200, 200, 200, 400, 200, 400, 200, 200})
-                .setSmallIcon(R.mipmap.ic_launcher)
+                .setSmallIcon(iconId)
                 .setContentTitle(title)
                 .setContentText(message)
                 .setPriority(NotificationCompat.PRIORITY_MAX)
                 .setLocalOnly(false)
                 .extend(wearableExtender)
-                .setContentIntent(viewPendingIntent);
+                .setContentIntent(viewPendingIntent)
+                .addAction(R.drawable.icon_yes_white, "Yes", viewPendingIntent)
+                .addAction(R.drawable.icon_no_white, "No", viewPendingIntent);
 
         NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this.context);
 
